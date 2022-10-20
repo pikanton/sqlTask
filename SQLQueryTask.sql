@@ -20,12 +20,12 @@ FROM card
 
 SELECT payslip,
 	   account.balance,
-	   (SUM(card.balance)) as summary,
-	   (account.balance - SUM(card.balance)) AS difference
+	   ISNULL(SUM(card.balance),0) as summary,
+	   account.balance - ISNULL(SUM(card.balance),0) AS difference
 FROM account
-	JOIN card ON id_account = account.id
-GROUP BY payslip, account.balance
-HAVING account.balance > SUM(card.balance)
+	LEFT JOIN card ON id_account = account.id
+GROUP BY account.id, payslip, account.balance
+HAVING account.balance > ISNULL(SUM(card.balance),0)
 
 /*4. Вывести кол-во банковских карточек для каждого соц статуса (2 реализации, GROUP BY и подзапросом)*/
 
